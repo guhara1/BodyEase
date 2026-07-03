@@ -4,8 +4,9 @@
 export const site = {
   brand: '간다GO',
   brandEn: 'GandaGO',
-  // 공식 도메인 (배포 시 실제 도메인으로 교체)
-  baseUrl: 'https://gandago.co.kr',
+  // 공식 도메인 — 현재 Cloudflare Pages 배포 주소.
+  // 커스텀 도메인 연결 시 이 값만 바꾸고 다시 빌드하면 canonical·sitemap·OG가 모두 갱신됩니다.
+  baseUrl: 'https://bodyease-4ti.pages.dev',
   locale: 'ko_KR',
   lang: 'ko',
 

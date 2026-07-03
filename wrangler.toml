@@ -1,0 +1,6 @@
+# Cloudflare Pages 배포 설정
+# 빌드 결과물(dist/)이 리포지토리에 커밋되어 있어 별도 빌드 명령 없이 배포됩니다.
+# 대시보드에서 빌드 명령을 지정하려면: build command = "npm run build", output = "dist"
+name = "bodyease-4ti"
+compatibility_date = "2026-07-03"
+pages_build_output_dir = "dist"
