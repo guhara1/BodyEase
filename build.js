@@ -11,6 +11,7 @@ import { hubBody, timeBody, beltBody, districtBody, stationBody, checkBody, CHEC
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(__dirname, 'dist');
+const REGION_NAMES = regions.map((r) => r.meta.name).join('·'); // 예: 서울·경기·인천·부산
 
 const urls = [];
 async function emit(url, html, { noindex = false } = {}) {
@@ -29,7 +30,8 @@ const beltName = (region, slug) => region.belts.find((b) => b.slug === slug)?.na
 function homePage() {
   const url = '/';
   const title = site.defaultTitle;
-  const description = '간다GO 서울·경기 출장마사지 60·90·120분 코스 요금과 이용 장소별 안내.';
+  const regionNames = REGION_NAMES;
+  const description = `간다GO ${regionNames} 출장마사지 60·90·120분 코스 요금과 이용 장소별 안내.`;
 
   const pricing = site.courses
     .map(
@@ -67,16 +69,16 @@ function homePage() {
 
   const faq = [
     { q: '간다GO 코스와 요금은 어떻게 되나요?', a: '60분 90,000원, 90분 150,000원, 120분 180,000원 기준이며 지역·예약 시간대·이동 거리에 따라 상담 시 최종 확인됩니다.' },
-    { q: '어느 지역까지 이용 안내가 되나요?', a: '현재 서울과 경기 지역을 이용 장소·생활권별로 안내하며, 지역은 계속 확장하고 있습니다.' },
+    { q: '어느 지역까지 이용 안내가 되나요?', a: `현재 ${regionNames} 지역을 이용 장소·생활권별로 안내하며, 지역은 계속 확장하고 있습니다.` },
     { q: '불법·선정적 서비스도 가능한가요?', a: '불법·선정적 서비스는 제공하거나 안내하지 않습니다.' },
     { q: '예약은 어떻게 하나요?', a: `전화예약 ${site.phone} 으로 문의하시면 이용 장소와 예약 가능 시간을 확인해 안내합니다.` },
   ];
 
   const body = `<section class="hero">
   <div class="container">
-    <p class="eyebrow">서울·경기 출장마사지 · 이용 장소와 생활권별 예약 안내</p>
+    <p class="eyebrow">${regionNames} 출장마사지 · 이용 장소와 생활권별 예약 안내</p>
     <h1>출장마사지, 지역명보다<br>이용 장소 확인이 먼저입니다</h1>
-    <p class="lede">간다GO는 서울·경기에서 호텔·오피스텔·아파트·업무지구·신도시 이용 전 필요한 주소 확인, 건물 출입, 예약 가능 시간, 개인정보 처리 기준을 안내합니다.</p>
+    <p class="lede">간다GO는 ${regionNames}에서 호텔·오피스텔·아파트·업무지구·신도시 이용 전 필요한 주소 확인, 건물 출입, 예약 가능 시간, 개인정보 처리 기준을 안내합니다.</p>
     <div class="hero__cta">
       <a class="btn btn--primary" href="${site.phoneHref}">전화예약 ${site.phone}</a>
       <a class="btn btn--ghost" href="/seoul-service/">서울 이용 안내 →</a>
@@ -228,7 +230,7 @@ function regionMain(region) {
 // ---------------------------------------------------------------------------
 function policyBody(p) {
   const rows = {
-    about: `<p>간다GO 콘텐츠는 서울·경기 지역 방문형 웰니스 서비스 이용 전 확인 사항을 안내하기 위해 작성됩니다.</p>
+    about: `<p>간다GO 콘텐츠는 ${REGION_NAMES} 등 방문형 웰니스 서비스 이용 전 확인 사항을 안내하기 위해 작성됩니다.</p>
       <h2>작성 기준</h2>
       <p>공식 자치구·시·군 자료, 실제 예약 전 확인 항목, 개인정보 처리 기준, 불법·선정적 서비스 불가 원칙을 기준으로 작성합니다.</p>
       <h2>검수 기준</h2>

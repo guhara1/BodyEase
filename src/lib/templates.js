@@ -141,8 +141,8 @@ function header() {
     ['/', '홈'],
     ['/seoul-service/', '서울'],
     ['/gyeonggi-service/', '경기'],
-    ['/seoul-service/use/hotel/', '이용 장소'],
-    ['/seoul-service/check/address/', '예약 전 확인'],
+    ['/incheon-service/', '인천'],
+    ['/busan-service/', '부산'],
     ['/contact/', '문의하기'],
   ];
   return `<a href="#main" class="skip">본문 바로가기</a>
@@ -168,7 +168,7 @@ function footer() {
       ['/seoul-service/', '서울 출장마사지'],
       ['/gyeonggi-service/', '경기 출장마사지'],
       ['/incheon-service/', '인천 출장마사지'],
-      ['/gyeonggi-service/belt/seongnam-bundang/', '성남·분당·판교 벨트'],
+      ['/busan-service/', '부산 출장마사지'],
     ]],
     ['이용 장소', [
       ['/seoul-service/use/hotel/', '호텔·숙소'],
