@@ -196,7 +196,18 @@ a.card .card__more { color: var(--accent-2); font-weight: 700; font-size: .9rem;
 /* =========================================================================
    6. Hero
    ========================================================================= */
-.hero { padding-block: clamp(56px, 10vw, 120px); position: relative; }
+.hero { padding-block: clamp(56px, 10vw, 120px); position: relative; isolation: isolate; }
+/* 히어로 배경 이미지 — src/assets/hero-bg.jpg 업로드 시 자동 적용.
+   파일이 없으면 배경만 로드 실패하고 아래 그라디언트(body 배경)가 그대로 보입니다. */
+.hero::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(180deg, rgba(7,11,22,0.72) 0%, rgba(7,11,22,0.85) 55%, var(--bg) 100%),
+    linear-gradient(90deg, rgba(7,11,22,0.78) 0%, rgba(7,11,22,0.30) 60%, transparent 100%),
+    url('/assets/hero-bg.webp');
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+}
+.hero .container { position: relative; z-index: 1; }
 .hero h1 { max-width: 16ch; }
 .hero .lede { margin-top: 8px; }
 .hero__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
@@ -233,10 +244,14 @@ a.card .card__more { color: var(--accent-2); font-weight: 700; font-size: .9rem;
 .article ul, .article ol { color: var(--text-2); padding-left: 1.3em; }
 .article li { margin-bottom: .5em; }
 .article .figure {
-  border-radius: var(--r); overflow: hidden; border: 1px solid var(--border);
-  background: linear-gradient(160deg, var(--surface-2), var(--surface));
-  aspect-ratio: 16 / 8; display: flex; align-items: center; justify-content: center;
-  color: var(--text-faint); font-size: .9rem; margin: 6px 0 26px;
+  position: relative; border-radius: var(--r); overflow: hidden; border: 1px solid var(--border);
+  aspect-ratio: 16 / 9; margin: 6px 0 26px;
+}
+.article .figure img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.article .figure figcaption {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 18px 12px;
+  font-size: .82rem; color: var(--text-2);
+  background: linear-gradient(0deg, rgba(7,11,22,0.72), transparent);
 }
 
 /* 체크리스트 */

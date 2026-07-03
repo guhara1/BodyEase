@@ -349,6 +349,7 @@ function programBody(p) {
     <p class="eyebrow">마사지 프로그램</p>
     <h1>${p.h1}</h1>
     <p class="lede">${p.tagline}</p>
+    <figure class="figure"><img src="/assets/hero-bg.webp" alt="${p.name} 프로그램 안내 이미지" loading="lazy" decoding="async" width="1600" height="900"><figcaption>${p.name} 프로그램 안내</figcaption></figure>
 
     <h2>${p.name} 소개</h2>
     <p>${p.intro}</p>
@@ -665,10 +666,23 @@ async function build() {
     await emit(url, page({ url, title: '사이트맵｜간다GO', description: '간다GO 서울·경기 출장마사지 안내 전체 페이지 목록입니다.', breadcrumbs, body: sitemapHtmlBody() }));
   }
 
-  // sitemap.xml
+  // sitemap.xml (image sitemap 포함 — 지시서 19)
+  const abs = (p) => site.baseUrl.replace(/\/$/, '') + p;
+  const heroImg = abs('/assets/hero-bg.webp');
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u) => `  <url><loc>${site.baseUrl.replace(/\/$/, '')}${u}</loc></url>`).join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${urls
+  .map(
+    (u) => `  <url>
+    <loc>${abs(u)}</loc>
+    <image:image>
+      <image:loc>${u === '/' ? abs('/assets/og-default.jpg') : heroImg}</image:loc>
+      <image:title>간다GO 서울 출장마사지 이용 안내</image:title>
+    </image:image>
+  </url>`
+  )
+  .join('\n')}
 </urlset>`;
   await fs.writeFile(path.join(DIST, 'sitemap.xml'), xml, 'utf8');
 

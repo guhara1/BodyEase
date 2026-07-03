@@ -23,7 +23,8 @@ function checklistHtml(items = CHECKLIST) {
 }
 
 function figure(alt) {
-  return `<div class="figure" role="img" aria-label="${alt}">${alt}</div>`;
+  // 대표 이미지 — 전 상세 페이지에 실제 <img>로 노출 (페이지별 고유 alt, image sitemap 대상)
+  return `<figure class="figure"><img src="/assets/hero-bg.webp" alt="${alt}" loading="lazy" decoding="async" width="1600" height="900"><figcaption>${alt}</figcaption></figure>`;
 }
 
 // 지역별 안내 배너 (개인정보 / 불법·선정적 서비스 불가)
@@ -429,6 +430,7 @@ export function checkBody(c, ctx, relatedLinks) {
     <p class="eyebrow">${ctx.name} · 예약 전 확인</p>
     <h1>${ctx.name} ${c.h1}</h1>
     <p class="lede">${ctx.name} ${c.desc}</p>
+    ${figure(`${ctx.name} ${c.name} 안내 이미지`)}
 
     <h2>${c.name}</h2>
     <p>${ctx.name} 지역 예약 시 ${c.body}</p>
