@@ -138,12 +138,10 @@ ${JSON.stringify(schema)}
 // ---------------------------------------------------------------------------
 function header() {
   const links = [
-    ['/seoul-service/', '서울 홈'],
+    ['/', '홈'],
+    ['/seoul-service/', '서울'],
+    ['/gyeonggi-service/', '경기'],
     ['/seoul-service/use/hotel/', '이용 장소'],
-    ['/seoul-service/time/after-work/', '시간대 안내'],
-    ['/seoul-service/belt/gangnam-business/', '생활벨트'],
-    ['/seoul-service/district/gangnam-gu/', '구별 안내'],
-    ['/seoul-service/station/gangnam-station/', '역세권'],
     ['/seoul-service/check/address/', '예약 전 확인'],
     ['/contact/', '문의하기'],
   ];
@@ -166,17 +164,17 @@ function header() {
 // ---------------------------------------------------------------------------
 function footer() {
   const cols = [
+    ['지역 안내', [
+      ['/seoul-service/', '서울 출장마사지'],
+      ['/gyeonggi-service/', '경기 출장마사지'],
+      ['/seoul-service/belt/gangnam-business/', '강남 비즈니스 벨트'],
+      ['/gyeonggi-service/belt/seongnam-bundang/', '성남·분당·판교 벨트'],
+    ]],
     ['이용 장소', [
       ['/seoul-service/use/hotel/', '호텔·숙소'],
       ['/seoul-service/use/officetel/', '오피스텔'],
       ['/seoul-service/use/business-district/', '업무지구'],
       ['/seoul-service/use/night/', '야간 예약'],
-    ]],
-    ['생활벨트', [
-      ['/seoul-service/belt/gangnam-business/', '강남 비즈니스'],
-      ['/seoul-service/belt/jamsil-songpa/', '잠실·송파'],
-      ['/seoul-service/belt/yeouido-yeongdeungpo/', '여의도·영등포'],
-      ['/seoul-service/belt/hongdae-mapo/', '홍대·마포'],
     ]],
     ['안내', [
       ['/seoul-service/check/address/', '예약 전 확인'],
