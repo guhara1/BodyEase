@@ -167,7 +167,7 @@ function footer() {
     ['지역 안내', [
       ['/seoul-service/', '서울 출장마사지'],
       ['/gyeonggi-service/', '경기 출장마사지'],
-      ['/seoul-service/belt/gangnam-business/', '강남 비즈니스 벨트'],
+      ['/incheon-service/', '인천 출장마사지'],
       ['/gyeonggi-service/belt/seongnam-bundang/', '성남·분당·판교 벨트'],
     ]],
     ['이용 장소', [
