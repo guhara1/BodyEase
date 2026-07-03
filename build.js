@@ -402,8 +402,9 @@ async function build() {
       ];
       const { faq, html } = districtBody(d, meta, beltName(region, d.belt), related);
       const breadcrumbs = [home, regionCrumb, { name: meta.districtLabel, url: `${meta.base}/` }, { name: d.name, url }];
-      const noindex = d.tier >= 3;
-      await emit(url, page({ url, title: `${d.h1}｜간다GO`, description: d.desc, breadcrumbs, faq, noindex, body: html }), { noindex });
+      // 전 페이지 index — 생활권별 상세 본문(2,000자 이상)으로 얇은 페이지 문제를 해소했으므로
+      // tier는 지역 메인 노출 우선순위로만 사용하고 noindex는 사용하지 않습니다.
+      await emit(url, page({ url, title: `${d.h1}｜간다GO`, description: d.desc, breadcrumbs, faq, body: html }));
     }
 
     // 역세권

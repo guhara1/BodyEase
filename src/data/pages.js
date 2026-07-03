@@ -132,6 +132,9 @@ export const districts = [
   { slug: 'eunpyeong-gu', name: '은평구', tier: 2, belt: 'nowon-eunpyeong', h1: '은평구 출장마사지 · 연신내·불광 이용 기준', desc: '은평구 출장마사지 연신내 역세권, 불광 아파트 단지 이용 기준을 안내합니다.', sub: ['연신내', '불광', '응암', '구파발'] },
   { slug: 'nowon-gu', name: '노원구', tier: 2, belt: 'nowon-eunpyeong', h1: '노원구 출장마사지 · 노원·상계·중계 이용 기준', desc: '노원구 출장마사지 노원역 상권, 상계·중계 아파트 단지 이용 기준을 안내합니다.', sub: ['노원', '상계', '중계', '하계'] },
   { slug: 'seongbuk-gu', name: '성북구', tier: 2, belt: 'nowon-eunpyeong', h1: '성북구 출장마사지 · 성신여대·길음 이용 기준', desc: '성북구 출장마사지 성신여대 상권, 길음 아파트 단지 이용 기준을 안내합니다.', sub: ['성신여대입구', '길음', '정릉', '돈암'] },
+  { slug: 'jungnang-gu', name: '중랑구', tier: 2, belt: 'nowon-eunpyeong', h1: '중랑구 출장마사지 · 상봉·망우·면목 이용 기준', desc: '중랑구 출장마사지 상봉 환승 상권, 망우·면목 주거지 이용 기준을 안내합니다.', sub: ['상봉', '망우', '면목', '중화', '묵동'] },
+  { slug: 'gangbuk-gu', name: '강북구', tier: 2, belt: 'nowon-eunpyeong', h1: '강북구 출장마사지 · 수유·미아 이용 기준', desc: '강북구 출장마사지 수유 상권, 미아 아파트 단지, 우이 생활권 이용 기준을 안내합니다.', sub: ['수유', '미아', '번동', '우이'] },
+  { slug: 'dobong-gu', name: '도봉구', tier: 2, belt: 'nowon-eunpyeong', h1: '도봉구 출장마사지 · 창동·쌍문·방학 이용 기준', desc: '도봉구 출장마사지 창동 역세권 상권, 쌍문·방학 주거지 이용 기준을 안내합니다.', sub: ['창동', '쌍문', '방학', '도봉'] },
 ];
 
 // 핵심 역세권 (이용 상황형 역세권 페이지)
