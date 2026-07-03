@@ -164,10 +164,10 @@ function header() {
 // 푸터 — 오렌지 제작문의·제휴문의 버튼(텔레그램) + 상호/전화
 // ---------------------------------------------------------------------------
 function footer() {
-  // 전체 지역 디렉터리 (푸터 상단 전체폭 칩 행)
-  const regionDirectory = regions
-    .map((r) => `<a href="${r.meta.base}/">${r.meta.name}</a>`)
-    .join('\n      ');
+  // 전체 지역 디렉터리 (푸터 상단 전체폭 칩 행) — 시·도 / 주요 도시 분리
+  const chip = (r) => `<a href="${r.meta.base}/">${r.meta.name}</a>`;
+  const provinceChips = regions.filter((r) => r.meta.kind !== 'city').map(chip).join('\n      ');
+  const cityChips = regions.filter((r) => r.meta.kind === 'city').map(chip).join('\n      ');
   const cols = [
     ['주요 지역', regions.slice(0, 5).map((r) => [`${r.meta.base}/`, `${r.meta.name} 출장마사지`])],
     ['이용 장소', [
@@ -197,9 +197,13 @@ function footer() {
     </div>
 
     <div class="footer-regions">
-      <h4>전체 지역 안내</h4>
+      <h4>광역 시·도</h4>
       <div class="related">
-      ${regionDirectory}
+      ${provinceChips}
+      </div>
+      <h4 style="margin-top:22px">주요 도시</h4>
+      <div class="related">
+      ${cityChips}
       </div>
     </div>
 

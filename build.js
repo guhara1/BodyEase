@@ -11,7 +11,14 @@ import { hubBody, timeBody, beltBody, districtBody, stationBody, checkBody, CHEC
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(__dirname, 'dist');
-const REGION_NAMES = regions.map((r) => r.meta.name).join('·'); // 예: 서울·경기·인천·부산
+const REGION_NAMES = regions
+  .filter((r) => r.meta.kind !== 'city')
+  .map((r) => r.meta.name)
+  .join('·'); // 시·도 이름 (예: 서울·경기·인천…)
+// 도(道) 시(市) 이름 → 전용 도시 허브 base 매핑 (예: '수원' → '/suwon-service')
+const CITY_HUB_BY_NAME = new Map(
+  regions.filter((r) => r.meta.kind === 'city').map((r) => [r.meta.name, r.meta.base])
+);
 
 const urls = [];
 async function emit(url, html, { noindex = false } = {}) {
@@ -46,15 +53,13 @@ function homePage() {
     )
     .join('\n    ');
 
-  const regionCards = regions
-    .map(
-      (r) => `<a class="card card--accent" href="${r.meta.base}/">
+  const regionCard = (r) => `<a class="card card--accent" href="${r.meta.base}/">
       <h3>${r.meta.name} 출장마사지</h3>
       <p>${r.meta.tagline}</p>
       <span class="card__more">${r.meta.name} 이용 안내 →</span>
-    </a>`
-    )
-    .join('\n    ');
+    </a>`;
+  const provinceCards = regions.filter((r) => r.meta.kind !== 'city').map(regionCard).join('\n    ');
+  const cityCards = regions.filter((r) => r.meta.kind === 'city').map(regionCard).join('\n    ');
 
   // 대표 이용 장소(서울 허브) 카드
   const useCards = regions[0].hubs
@@ -89,9 +94,14 @@ function homePage() {
 <section class="section">
   <div class="container">
     <p class="eyebrow">지역을 선택하세요</p>
-    <h2>지역별 이용 안내</h2>
+    <h2>광역 시·도 이용 안내</h2>
     <div class="grid grid--2" style="margin-top:30px">
-    ${regionCards}
+    ${provinceCards}
+    </div>
+    <h2 style="margin-top:2em">주요 도시 상세 안내</h2>
+    <p class="lede">도(道) 내 대도시는 구·생활권 단위로 더 자세히 안내합니다.</p>
+    <div class="grid grid--2" style="margin-top:24px">
+    ${cityCards}
     </div>
   </div>
 </section>
@@ -378,7 +388,12 @@ async function build() {
     // 구/시
     for (const d of region.districts) {
       const url = `${meta.base}/district/${d.slug}/`;
+      // 도(道) 시(市) 페이지에 전용 도시 허브가 있으면 상세 안내 링크를 최상단에 배치
+      const cityHubBase = CITY_HUB_BY_NAME.get(d.name.replace(/시$/, ''));
       const related = [
+        ...(cityHubBase && meta.kind !== 'city'
+          ? [[`${cityHubBase}/`, `${d.name.replace(/시$/, '')} 구·생활권 상세 안내`]]
+          : []),
         [`${meta.base}/belt/${d.belt}/`, `${beltName(region, d.belt)}`],
         [`${meta.base}/use/hotel/`, '호텔·숙소 이용 전 확인'],
         [`${meta.base}/use/officetel/`, '오피스텔 공동현관 확인'],
