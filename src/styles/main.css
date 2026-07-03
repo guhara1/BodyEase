@@ -311,6 +311,9 @@ a.card .card__more { color: var(--accent-2); font-weight: 700; font-size: .9rem;
 .footer-cta__text p { margin: 4px 0 0; color: var(--text-muted); font-size: .92rem; }
 .footer-cta__btns { display: flex; flex-wrap: wrap; gap: 12px; }
 
+.footer-regions { margin-bottom: 40px; padding-bottom: 34px; border-bottom: 1px solid var(--border); }
+.footer-regions h4 { font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 14px; }
+
 .footer-grid { display: grid; gap: 30px; grid-template-columns: 1.4fr repeat(3, 1fr); }
 .footer-grid h4 { font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 14px; }
 .footer-grid ul { list-style: none; padding: 0; margin: 0; }

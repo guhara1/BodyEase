@@ -138,10 +138,12 @@ ${JSON.stringify(schema)}
 // 헤더
 // ---------------------------------------------------------------------------
 function header() {
-  // 지역 링크는 regions 배열에서 자동 생성 (새 지역 추가 시 자동 반영)
+  // 지역이 많아 헤더에는 대표 지역만 노출하고, 전체 지역은 사이트맵으로 연결
+  const featured = regions.slice(0, 5).map((r) => [`${r.meta.base}/`, r.meta.name]);
   const links = [
     ['/', '홈'],
-    ...regions.map((r) => [`${r.meta.base}/`, r.meta.name]),
+    ...featured,
+    ['/sitemap/', '전체 지역'],
     ['/contact/', '문의하기'],
   ];
   return `<a href="#main" class="skip">본문 바로가기</a>
@@ -162,8 +164,12 @@ function header() {
 // 푸터 — 오렌지 제작문의·제휴문의 버튼(텔레그램) + 상호/전화
 // ---------------------------------------------------------------------------
 function footer() {
+  // 전체 지역 디렉터리 (푸터 상단 전체폭 칩 행)
+  const regionDirectory = regions
+    .map((r) => `<a href="${r.meta.base}/">${r.meta.name}</a>`)
+    .join('\n      ');
   const cols = [
-    ['지역 안내', regions.map((r) => [`${r.meta.base}/`, `${r.meta.name} 출장마사지`])],
+    ['주요 지역', regions.slice(0, 5).map((r) => [`${r.meta.base}/`, `${r.meta.name} 출장마사지`])],
     ['이용 장소', [
       ['/seoul-service/use/hotel/', '호텔·숙소'],
       ['/seoul-service/use/officetel/', '오피스텔'],
@@ -190,12 +196,19 @@ function footer() {
       </div>
     </div>
 
+    <div class="footer-regions">
+      <h4>전체 지역 안내</h4>
+      <div class="related">
+      ${regionDirectory}
+      </div>
+    </div>
+
     <div class="footer-grid">
       <div class="footer-brand">
         <span class="dot"></span><strong>${site.brand}</strong>
         <div class="footer-biz">
           <b>상호</b> ${site.brand}<br>
-          서울 출장마사지 · 이용 장소와 생활권별 예약 안내
+          전국 출장마사지 · 이용 장소와 생활권별 예약 안내
         </div>
         <a class="footer-tel" href="${site.phoneHref}">📞 전화예약 ${site.phone}</a>
       </div>
