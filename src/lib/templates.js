@@ -126,6 +126,9 @@ ${noindex ? '<meta name="robots" content="noindex, follow">' : '<meta name="robo
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${img}">
 <meta name="theme-color" content="#070b16">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="/styles/main.css">
 <script type="application/ld+json">
@@ -138,13 +141,18 @@ ${JSON.stringify(schema)}
 // 헤더
 // ---------------------------------------------------------------------------
 function header() {
-  // 헤더에는 대표 지역만 노출하고, 나머지는 사이트맵으로 연결
-  const featured = regions.slice(0, 4).map((r) => [`${r.meta.base}/`, r.meta.name]);
+  // 지시서 5. 상단 메뉴 구성 — 메뉴명에 '출장마사지'를 반복하지 않는다
+  const base = regions[0].meta.base;
   const links = [
-    ['/', '홈'],
+    [`${base}/`, '서울 홈'],
+    [`${base}/use/hotel/`, '이용 장소'],
+    [`${base}/time/after-work/`, '시간대 안내'],
+    [`${base}/belt/gangnam-business/`, '생활벨트'],
+    [`${base}/district/gangnam-gu/`, '구별 안내'],
+    [`${base}/station/gangnam-station/`, '역세권'],
+    [`${base}/check/address/`, '예약 전 확인'],
     ['/programs/', '프로그램'],
-    ...featured,
-    ['/sitemap/', regions.length > 1 ? '전체 지역' : '사이트맵'],
+    ['/operating-standards/', '운영 기준'],
     ['/contact/', '문의하기'],
   ];
   return `<a href="#main" class="skip">본문 바로가기</a>

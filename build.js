@@ -185,7 +185,14 @@ function regionMain(region) {
     <p class="lede">${meta.intro}</p>
     <div class="hero__cta">
       <a class="btn btn--primary" href="${site.phoneHref}">전화예약 ${site.phone}</a>
-      <a class="btn btn--ghost" href="/">다른 지역 보기 →</a>
+    </div>
+    <div class="hero__chips">
+      <a class="chip" href="${meta.base}/use/hotel/">호텔·숙소 확인</a>
+      <a class="chip" href="${meta.base}/use/officetel/">오피스텔 확인</a>
+      <a class="chip" href="${meta.base}/use/night/">야간 예약 기준</a>
+      <a class="chip" href="${meta.base}/belt/${region.belts[0].slug}/">${region.belts[0].name}</a>
+      ${region.belts[5] ? `<a class="chip" href="${meta.base}/belt/${region.belts[5].slug}/">${region.belts[5].name.replace(/ 벨트$/, '')} 숙소</a>` : ''}
+      <a class="chip" href="${meta.base}/check/address/">예약 전 확인</a>
     </div>
   </div>
 </section>
@@ -492,6 +499,15 @@ async function build() {
   await fs.mkdir(DIST, { recursive: true });
   await fs.mkdir(path.join(DIST, 'styles'), { recursive: true });
   await fs.copyFile(path.join(__dirname, 'src/styles/main.css'), path.join(DIST, 'styles/main.css'));
+
+  // 정적 자산 (파비콘·OG 이미지·로고)
+  await fs.mkdir(path.join(DIST, 'assets'), { recursive: true });
+  for (const f of await fs.readdir(path.join(__dirname, 'src/assets'))) {
+    await fs.copyFile(path.join(__dirname, 'src/assets', f), path.join(DIST, 'assets', f));
+  }
+  // 파비콘은 루트 경로에서도 서빙 (브라우저 기본 요청 경로)
+  await fs.copyFile(path.join(__dirname, 'src/assets/favicon.svg'), path.join(DIST, 'favicon.svg'));
+  await fs.copyFile(path.join(__dirname, 'src/assets/favicon.ico'), path.join(DIST, 'favicon.ico'));
 
   // 전역 홈
   { const h = homePage(); await emit(h.url, page(h)); }
