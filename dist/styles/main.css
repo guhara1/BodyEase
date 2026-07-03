@@ -314,7 +314,7 @@ a.card .card__more { color: var(--accent-2); font-weight: 700; font-size: .9rem;
 .footer-regions { margin-bottom: 40px; padding-bottom: 34px; border-bottom: 1px solid var(--border); }
 .footer-regions h4 { font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 14px; }
 
-.footer-grid { display: grid; gap: 30px; grid-template-columns: 1.4fr repeat(3, 1fr); }
+.footer-grid { display: grid; gap: 30px; grid-template-columns: 1.4fr repeat(4, 1fr); }
 .footer-grid h4 { font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 14px; }
 .footer-grid ul { list-style: none; padding: 0; margin: 0; }
 .footer-grid li { margin-bottom: 9px; }

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 import { site } from './src/data/site.js';
 import { regions, checks, policies } from './src/data/regions/index.js';
+import { programs } from './src/data/programs.js';
 import { page, faqHtml, relatedHtml, whwBlock } from './src/lib/templates.js';
 import { hubBody, timeBody, beltBody, districtBody, stationBody, checkBody, CHECKLIST } from './src/lib/content.js';
 
@@ -119,6 +120,25 @@ function homePage() {
 </section>
 
 <section class="section">
+  <div class="container">
+    <p class="eyebrow">마사지 프로그램</p>
+    <h2>프로그램 안내</h2>
+    <p class="lede">스웨디시부터 스포츠마사지, 태국마사지까지 — 컨디션에 맞는 프로그램을 선택하세요.</p>
+    <div class="grid grid--3" style="margin-top:30px">
+    ${programs
+      .map(
+        (p) => `<a class="card" href="/programs/${p.slug}/">
+      <h3>${p.name}</h3>
+      <p>${p.tagline}</p>
+      <span class="card__more">프로그램 안내 →</span>
+    </a>`
+      )
+      .join('\n    ')}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--bg-2)">
   <div class="container">
     <p class="eyebrow">지역명보다 이용 장소 확인이 먼저입니다</p>
     <h2>이용 장소별 안내</h2>
@@ -297,6 +317,137 @@ function policyBody(p) {
 }
 
 // ---------------------------------------------------------------------------
+// 마사지 프로그램 페이지 (전역)
+// ---------------------------------------------------------------------------
+function programBody(p) {
+  const others = programs.filter((x) => x.slug !== p.slug);
+  const faq = [
+    { q: `${p.name}은 어떤 프로그램인가요?`, a: p.intro },
+    { q: `${p.name} 요금은 어떻게 되나요?`, a: `60분 90,000원, 90분 150,000원, 120분 180,000원 코스 체계를 따릅니다. ${p.courseNote}` },
+    { q: '이용 전 준비할 것이 있나요?', a: p.caution },
+    { q: '프로그램을 바꾸거나 조합할 수 있나요?', a: '예약 시 또는 진행 전 상담으로 프로그램 변경·조합이 가능합니다. 압 강도도 진행 중 조절할 수 있습니다.' },
+  ];
+  const html = `<section class="section">
+  <div class="container article">
+    <p class="eyebrow">마사지 프로그램</p>
+    <h1>${p.h1}</h1>
+    <p class="lede">${p.tagline}</p>
+
+    <h2>${p.name} 소개</h2>
+    <p>${p.intro}</p>
+
+    <h2>${p.name}의 특징</h2>
+    <ul>${p.features.map((f) => `<li>${f}</li>`).join('')}</ul>
+
+    <h2>이런 분께 잘 맞습니다</h2>
+    <ul>${p.goodFor.map((g) => `<li>${g}</li>`).join('')}</ul>
+
+    <h2>코스 구성과 요금</h2>
+    <p>${p.name}은 간다GO 공통 코스 체계로 이용할 수 있습니다. ${p.courseNote}</p>
+    <ul>
+      <li><strong>60분 코스 — 90,000원</strong> · 기본 컨디션·릴랙스 케어</li>
+      <li><strong>90분 코스 — 150,000원</strong> · 아로마 포함 추천 구성</li>
+      <li><strong>120분 코스 — 180,000원</strong> · 전신 집중 프리미엄 케어</li>
+    </ul>
+    <p>지역·예약 시간대·이동 거리에 따라 상담 시 최종 확인됩니다.</p>
+
+    <h2>이용 흐름</h2>
+    <ol>
+      <li><strong>프로그램·코스 선택</strong> — ${p.name} 기준으로 60·90·120분 중 선택합니다. 상담 시 컨디션에 맞는 구성을 안내드립니다.</li>
+      <li><strong>이용 장소 확인</strong> — 호텔·오피스텔·아파트 등 이용 장소와 정확한 주소, 건물 출입 방식을 확인합니다.</li>
+      <li><strong>예약 확정</strong> — 예약 가능 시간과 이동 거리를 반영해 도착 시간을 안내드립니다.</li>
+      <li><strong>진행</strong> — 시작 전 압 강도와 집중 부위를 확인하고, 진행 중에도 조절을 요청할 수 있습니다.</li>
+    </ol>
+
+    <h2>이용 전 참고사항</h2>
+    <p>${p.caution}</p>
+
+    <h2>이용 장소와 지역</h2>
+    <p>${p.name}은 서울·경기·인천을 비롯한 전국 안내 지역의 호텔·오피스텔·아파트·자택에서 이용할 수 있습니다. 이용 장소에 따라 건물 출입 방식과 준비 사항이 다르므로, <a href="/seoul-service/use/hotel/">호텔·숙소 이용 기준</a>과 <a href="/seoul-service/use/officetel/">오피스텔 공동현관 확인</a> 페이지를 함께 참고하세요. 지역별 생활권 안내는 <a href="/sitemap/">전체 지역</a>에서 확인할 수 있습니다. 야간 시간대 이용을 원하시면 건물 출입 가능 여부를 먼저 확인해 드리니 예약 시 시간대를 함께 알려주세요.</p>
+
+    <div class="notice">
+      간다GO는 건전한 방문형 웰니스 관리만 제공합니다. <a href="/service-policy/">불법·선정적 서비스</a>는 제공하거나 안내하지 않으며,
+      예약 확인에 필요한 <a href="/privacy-policy/">최소 개인정보</a>만 확인합니다.
+    </div>
+
+    <h2>자주 묻는 질문</h2>
+    ${faqHtml(faq)}
+
+    <h2>Who · How · Why</h2>
+    ${whwBlock({
+      who: `이 페이지는 ${p.name} 프로그램 이용 전, 구성·요금·준비 사항을 확인할 수 있도록 작성되었습니다.`,
+      how: '실제 코스 체계와 상담 시 안내 기준을 바탕으로 작성하며, 과장·허위 표현 없이 사람이 최종 검수합니다.',
+      why: '프로그램 간 차이를 이해하고 자신에게 맞는 구성을 선택할 수 있도록 돕기 위해서입니다.',
+    })}
+
+    <h2>다른 프로그램 보기</h2>
+    ${relatedHtml([
+      ...others.map((o) => [`/programs/${o.slug}/`, `${o.name} 프로그램 안내`]),
+      ['/programs/', '전체 프로그램 보기'],
+      ['/contact/', '예약·문의하기'],
+    ])}
+  </div>
+</section>`;
+  return { faq, html };
+}
+
+function programsHub() {
+  const url = '/programs/';
+  const title = '마사지 프로그램 안내｜스웨디시·스포츠·태국마사지 · 간다GO';
+  const description = '간다GO 마사지 프로그램 안내. 스웨디시·아로마·스포츠·태국·딥티슈·발마사지 구성.';
+  const breadcrumbs = [{ name: '홈', url: '/' }, { name: '마사지 프로그램', url }];
+  const faq = [
+    { q: '어떤 프로그램이 있나요?', a: `${programs.map((p) => p.name).join(', ')} 프로그램을 운영합니다. 상담 시 컨디션에 맞는 구성을 안내드립니다.` },
+    { q: '프로그램마다 요금이 다른가요?', a: '요금은 60분 90,000원, 90분 150,000원, 120분 180,000원 공통 코스 체계를 따르며, 프로그램에 따라 구성만 달라집니다.' },
+    { q: '어떤 프로그램을 선택해야 할지 모르겠어요.', a: '처음이시라면 스웨디시, 뭉침이 심하면 스포츠·딥티슈, 오일이 부담스러우면 태국마사지를 권합니다. 전화 상담으로 맞는 구성을 안내드립니다.' },
+  ];
+  const cards = programs
+    .map(
+      (p) => `<a class="card" href="/programs/${p.slug}/">
+      <h3>${p.name}</h3>
+      <p>${p.tagline}</p>
+      <span class="card__more">프로그램 안내 →</span>
+    </a>`
+    )
+    .join('\n    ');
+  const body = `<section class="hero">
+  <div class="container">
+    <p class="eyebrow">마사지 프로그램</p>
+    <h1>마사지 프로그램 안내</h1>
+    <p class="lede">간다GO는 스웨디시부터 스포츠마사지, 태국마사지까지 컨디션과 취향에 맞는 프로그램을 운영합니다. 모든 프로그램은 60·90·120분 공통 코스 체계로 이용할 수 있습니다.</p>
+    <div class="hero__cta">
+      <a class="btn btn--primary" href="${site.phoneHref}">전화예약 ${site.phone}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>프로그램 선택</h2>
+    <div class="grid grid--3" style="margin-top:30px">
+    ${cards}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--bg-2)">
+  <div class="container article">
+    <h2>프로그램 선택 가이드</h2>
+    <p>처음 이용하시거나 부드러운 관리를 원하시면 <a href="/programs/swedish/">스웨디시</a>나 <a href="/programs/aroma/">아로마</a>를, 운동 후 뭉침이나 만성 긴장이 고민이면 <a href="/programs/sports/">스포츠마사지</a>·<a href="/programs/deep-tissue/">딥티슈</a>를 권합니다. 오일 사용이 부담스럽다면 건식으로 진행하는 <a href="/programs/thai/">태국마사지</a>가 적합하고, 하체 피로가 크다면 <a href="/programs/foot/">발마사지</a> 구성을 더할 수 있습니다.</p>
+    <h2 style="margin-top:1.4em">공통 코스 체계</h2>
+    <ul>
+      <li><strong>60분 코스 — 90,000원</strong> · 기본 컨디션·릴랙스 케어</li>
+      <li><strong>90분 코스 — 150,000원</strong> · 아로마 포함 추천 구성</li>
+      <li><strong>120분 코스 — 180,000원</strong> · 전신 집중 프리미엄 케어</li>
+    </ul>
+    <h2 style="margin-top:1.4em">자주 묻는 질문</h2>
+    ${faqHtml(faq)}
+  </div>
+</section>`;
+  return { url, title, description, breadcrumbs, faq, body };
+}
+
+// ---------------------------------------------------------------------------
 // 사이트맵(HTML)
 // ---------------------------------------------------------------------------
 function sitemapHtmlBody() {
@@ -314,6 +465,7 @@ function sitemapHtmlBody() {
     .join('\n    ');
   return `<section class="section"><div class="container article">
     <h1>사이트맵</h1>
+    ${group('마사지 프로그램', [['/programs/', '전체 프로그램'], ...programs.map((p) => [`/programs/${p.slug}/`, p.name])])}
     ${group('지역', regions.map((r) => [`${r.meta.base}/`, `${r.meta.name} 출장마사지`]))}
     ${regionGroups}
     ${group('예약 전 확인 (서울)', checks.map((c) => [`/seoul-service/check/${c.slug}/`, c.name]))}
@@ -435,6 +587,15 @@ async function build() {
       const breadcrumbs = [home, regionCrumb, { name: '예약 전 확인', url: `${meta.base}/` }, { name: c.name, url }];
       await emit(url, page({ url, title: `${meta.name} ${c.h1}｜간다GO`, description: `${meta.name} ${c.desc}`, breadcrumbs, faq, body: html }));
     }
+  }
+
+  // 마사지 프로그램 (전역)
+  { const h = programsHub(); await emit(h.url, page(h)); }
+  for (const p of programs) {
+    const url = `/programs/${p.slug}/`;
+    const { faq, html } = programBody(p);
+    const breadcrumbs = [{ name: '홈', url: '/' }, { name: '마사지 프로그램', url: '/programs/' }, { name: p.name, url }];
+    await emit(url, page({ url, title: p.title, description: p.desc, breadcrumbs, faq, body: html }));
   }
 
   // 정책/정적 (전역)

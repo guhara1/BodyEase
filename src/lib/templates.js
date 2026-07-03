@@ -139,9 +139,10 @@ ${JSON.stringify(schema)}
 // ---------------------------------------------------------------------------
 function header() {
   // 지역이 많아 헤더에는 대표 지역만 노출하고, 전체 지역은 사이트맵으로 연결
-  const featured = regions.slice(0, 5).map((r) => [`${r.meta.base}/`, r.meta.name]);
+  const featured = regions.slice(0, 4).map((r) => [`${r.meta.base}/`, r.meta.name]);
   const links = [
     ['/', '홈'],
+    ['/programs/', '프로그램'],
     ...featured,
     ['/sitemap/', '전체 지역'],
     ['/contact/', '문의하기'],
@@ -169,7 +170,13 @@ function footer() {
   const provinceChips = regions.filter((r) => r.meta.kind !== 'city').map(chip).join('\n      ');
   const cityChips = regions.filter((r) => r.meta.kind === 'city').map(chip).join('\n      ');
   const cols = [
-    ['주요 지역', regions.slice(0, 5).map((r) => [`${r.meta.base}/`, `${r.meta.name} 출장마사지`])],
+    ['프로그램', [
+      ['/programs/swedish/', '스웨디시'],
+      ['/programs/sports/', '스포츠마사지'],
+      ['/programs/thai/', '태국마사지'],
+      ['/programs/', '전체 프로그램'],
+    ]],
+    ['주요 지역', regions.slice(0, 4).map((r) => [`${r.meta.base}/`, `${r.meta.name} 출장마사지`])],
     ['이용 장소', [
       ['/seoul-service/use/hotel/', '호텔·숙소'],
       ['/seoul-service/use/officetel/', '오피스텔'],
