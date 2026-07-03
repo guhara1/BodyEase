@@ -8,7 +8,7 @@ import { site } from './src/data/site.js';
 import { regions, checks, policies } from './src/data/regions/index.js';
 import { programs } from './src/data/programs.js';
 import { page, faqHtml, relatedHtml, whwBlock } from './src/lib/templates.js';
-import { hubBody, timeBody, beltBody, districtBody, stationBody, checkBody, CHECKLIST } from './src/lib/content.js';
+import { hubBody, timeBody, beltBody, districtBody, stationBody, checkBody, dongBody, CHECKLIST } from './src/lib/content.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(__dirname, 'dist');
@@ -237,6 +237,16 @@ function regionMain(region) {
   </div>
 </section>
 
+${region.dongs?.length ? `<section class="section" style="background:var(--bg-2)">
+  <div class="container">
+    <h2>대표 행정동 안내</h2>
+    <p class="lede">검색 문의가 많은 대표 행정동의 이용 장소별 확인 기준입니다. 출구별·번호동 페이지는 만들지 않습니다.</p>
+    <div class="related" style="margin-top:24px">
+    ${region.dongs.map((x) => `<a href="${meta.base}/dong/${x.slug}/">${x.name}</a>`).join('\n    ')}
+    </div>
+  </div>
+</section>` : ''}
+
 <section class="section" style="background:var(--bg-2)">
   <div class="container article">
     <h2>예약 전 확인해야 할 내용</h2>
@@ -459,6 +469,7 @@ function sitemapHtmlBody() {
         group(`${r.meta.name} · 이용 장소`, r.hubs.map((h) => [`${b}/use/${h.slug}/`, h.focus])),
         group(`${r.meta.name} · 생활벨트`, r.belts.map((x) => [`${b}/belt/${x.slug}/`, x.name])),
         group(`${r.meta.name} · ${r.meta.districtLabel}`, r.districts.map((d) => [`${b}/district/${d.slug}/`, d.name])),
+        ...(r.dongs?.length ? [group(`${r.meta.name} · 대표 행정동`, r.dongs.map((x) => [`${b}/dong/${x.slug}/`, x.name]))] : []),
         group(`${r.meta.name} · 역세권`, r.stations.map((s) => [`${b}/station/${s.slug}/`, s.name])),
       ].join('\n    ');
     })
@@ -542,10 +553,13 @@ async function build() {
       const url = `${meta.base}/district/${d.slug}/`;
       // 도(道) 시(市) 페이지에 전용 도시 허브가 있으면 상세 안내 링크를 최상단에 배치
       const cityHubBase = CITY_HUB_BY_NAME.get(d.name.replace(/시$/, ''));
+      // 이 구에 속한 행정동 페이지 롱테일 내부링크 (지침서 1차-B)
+      const guDongs = (region.dongs || []).filter((x) => x.gu === d.slug);
       const related = [
         ...(cityHubBase && meta.kind !== 'city'
           ? [[`${cityHubBase}/`, `${d.name.replace(/시$/, '')} 구·생활권 상세 안내`]]
           : []),
+        ...guDongs.map((x) => [`${meta.base}/dong/${x.slug}/`, `${x.name} 이용 장소별 안내`]),
         [`${meta.base}/belt/${d.belt}/`, `${beltName(region, d.belt)}`],
         [`${meta.base}/use/hotel/`, '호텔·숙소 이용 전 확인'],
         [`${meta.base}/use/officetel/`, '오피스텔 공동현관 확인'],
@@ -557,6 +571,29 @@ async function build() {
       // 전 페이지 index — 생활권별 상세 본문(2,000자 이상)으로 얇은 페이지 문제를 해소했으므로
       // tier는 지역 메인 노출 우선순위로만 사용하고 noindex는 사용하지 않습니다.
       await emit(url, page({ url, title: `${d.h1}｜간다GO`, description: d.desc, breadcrumbs, faq, body: html }));
+    }
+
+    // 행정동 (지침서 1차-B — 대표 동만, 번호동·출구별 페이지 없음)
+    for (const dong of region.dongs || []) {
+      const url = `${meta.base}/dong/${dong.slug}/`;
+      const guDistrict = region.districts.find((x) => x.slug === dong.gu);
+      const siblingDongs = (region.dongs || []).filter((x) => x.gu === dong.gu && x.slug !== dong.slug);
+      const related = [
+        [`${meta.base}/district/${dong.gu}/`, `${dong.guName} 이용 안내`],
+        [`${meta.base}/belt/${dong.belt}/`, beltName(region, dong.belt)],
+        ...siblingDongs.slice(0, 3).map((x) => [`${meta.base}/dong/${x.slug}/`, `${x.name} 이용 장소별 안내`]),
+        [`${meta.base}/use/hotel/`, '호텔·숙소 이용 전 확인'],
+        [`${meta.base}/use/officetel/`, '오피스텔 공동현관 확인'],
+        ['/service-policy/', '불법·선정적 서비스 불가 안내'],
+      ];
+      const { faq, html } = dongBody(dong, meta, related);
+      const breadcrumbs = [
+        home,
+        regionCrumb,
+        { name: dong.guName, url: `${meta.base}/district/${dong.gu}/` },
+        { name: dong.name, url },
+      ];
+      await emit(url, page({ url, title: `${dong.h1}｜간다GO`, description: dong.desc, breadcrumbs, faq, body: html }));
     }
 
     // 역세권

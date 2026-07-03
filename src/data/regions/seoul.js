@@ -1,5 +1,6 @@
 // 서울 지역 — 기존 데이터(pages.js)를 지역 래퍼로 구성
 import { hubs, times, belts, districts, stations } from '../pages.js';
+import { seoulDongs } from '../dongs-seoul.js';
 
 export const seoul = {
   meta: {
@@ -22,4 +23,5 @@ export const seoul = {
   belts,
   districts,
   stations,
+  dongs: seoulDongs,
 };
