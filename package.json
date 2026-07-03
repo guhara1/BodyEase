@@ -1,0 +1,13 @@
+{
+  "name": "gandago",
+  "version": "1.0.0",
+  "private": true,
+  "description": "간다GO — 서울 출장마사지 이용 장소·생활권별 예약 안내 (정적 사이트 생성기)",
+  "type": "module",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
