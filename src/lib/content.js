@@ -22,6 +22,29 @@ function checklistHtml(items = CHECKLIST) {
   return `<ul class="checklist">${items.map((i) => `<li>${i}</li>`).join('')}</ul>`;
 }
 
+// 이용 코스·요금표 — 모든 지역 상세 페이지에 공통 노출
+export function priceTable(ctx) {
+  const region = ctx && ctx.name ? `${ctx.name} 지역도 ` : '';
+  const cards = site.courses
+    .map(
+      (c) => `<div class="card price-card${c.recommended ? ' card--accent' : ''}">
+      ${c.recommended ? '<span class="price-card__badge">추천</span>' : ''}
+      <div class="price-card__name">${c.name}</div>
+      <div class="price-card__price">${c.price}<small>원</small></div>
+      <div class="price-card__min">${c.minutes}</div>
+      <div class="price-card__desc">${c.desc}</div>
+      <a class="btn ${c.recommended ? 'btn--primary' : 'btn--ghost'} btn--block" href="${site.phoneHref}">예약 문의</a>
+    </div>`
+    )
+    .join('\n      ');
+  return `<h2>이용 코스와 요금</h2>
+    <p>${region}동일한 코스·요금으로 이용하실 수 있습니다. 60·90·120분 코스별 기준 요금이며, 추가 비용 없이 있는 그대로 안내드립니다.</p>
+    <div class="pricing pricing--compact" style="margin-top:22px">
+      ${cards}
+    </div>
+    <p style="margin-top:16px">지역·예약 시간대·이동 거리에 따라 상담 시 최종 확인됩니다. <a href="/terms/">상세 요금 안내 보기 →</a></p>`;
+}
+
 function figure(alt) {
   // 대표 이미지 — 전 상세 페이지에 실제 <img>로 노출 (페이지별 고유 alt, image sitemap 대상)
   return `<figure class="figure"><img src="/assets/hero-bg.webp" alt="${alt}" loading="lazy" decoding="async" width="1600" height="900"><figcaption>${alt}</figcaption></figure>`;
@@ -99,6 +122,8 @@ export function hubBody(hub, ctx, relatedLinks) {
 
     ${policyNotice(ctx)}
 
+    ${priceTable(ctx)}
+
     <h2>자주 묻는 질문</h2>
     ${faqHtml(faq)}
 
@@ -156,6 +181,8 @@ export function timeBody(t, ctx, relatedLinks) {
 
     ${policyNotice(ctx)}
 
+    ${priceTable(ctx)}
+
     <h2>자주 묻는 질문</h2>
     ${faqHtml(faq)}
 
@@ -209,6 +236,8 @@ export function beltBody(belt, ctx, relatedLinks) {
     ${checklistHtml()}
 
     ${policyNotice(ctx)}
+
+    ${priceTable(ctx)}
 
     <h2>자주 묻는 질문</h2>
     ${faqHtml(faq)}
@@ -279,6 +308,8 @@ export function districtBody(d, ctx, beltName, relatedLinks) {
 
     ${policyNotice(ctx)}
 
+    ${priceTable(ctx)}
+
     <h2>자주 묻는 질문</h2>
     ${faqHtml(faq)}
 
@@ -337,6 +368,8 @@ export function stationBody(s, ctx, relatedLinks) {
     ${checklistHtml()}
 
     ${policyNotice(ctx)}
+
+    ${priceTable(ctx)}
 
     <h2>자주 묻는 질문</h2>
     ${faqHtml(faq)}
@@ -401,6 +434,8 @@ export function dongBody(d, ctx, relatedLinks) {
 
     ${policyNotice(ctx)}
 
+    ${priceTable(ctx)}
+
     <h2>자주 묻는 질문</h2>
     ${faqHtml(faq)}
 
@@ -456,6 +491,8 @@ export function checkBody(c, ctx, relatedLinks) {
     ${checklistHtml()}
 
     ${policyNotice(ctx)}
+
+    ${priceTable(ctx)}
 
     <h2>자주 묻는 질문</h2>
     ${faqHtml(faq)}

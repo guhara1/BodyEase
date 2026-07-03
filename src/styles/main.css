@@ -317,6 +317,14 @@ a.card .card__more { color: var(--accent-2); font-weight: 700; font-size: .9rem;
    7. 요금(코스) 섹션
    ========================================================================= */
 .pricing { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: stretch; }
+/* 상세 페이지 본문(좁은 폭)용 컴팩트 3열 요금표 */
+.pricing--compact { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.pricing--compact .price-card { padding: 24px 16px; }
+.pricing--compact .price-card__name { font-size: 1.05rem; }
+.pricing--compact .price-card__price { font-size: clamp(1.5rem, 3.6vw, 2rem); margin: 8px 0 2px; }
+.pricing--compact .price-card__desc { font-size: .85rem; margin-bottom: 16px; }
+.pricing--compact .btn { padding: 10px 12px; font-size: .84rem; }
+@media (max-width: 620px) { .pricing--compact { grid-template-columns: 1fr; } }
 .price-card { text-align: center; padding: 34px 26px; }
 .price-card__name { font-size: 1.28rem; font-weight: 800; }
 .price-card__price { font-size: clamp(2.1rem, 5vw, 2.9rem); font-weight: 800; margin: 12px 0 2px; letter-spacing: -0.03em; }

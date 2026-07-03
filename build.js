@@ -254,6 +254,29 @@ ${region.dongs?.length ? `<section class="section" style="background:var(--bg-2)
   </div>
 </section>` : ''}
 
+<section class="section center">
+  <div class="container">
+    <p class="eyebrow">이용 코스와 요금 살펴보기</p>
+    <h2>이용 코스와 요금</h2>
+    <p class="lede">${meta.name} 전 지역 동일 요금 · 60·90·120분 코스별 기준 요금이며, 추가 비용 없이 안내드립니다.</p>
+    <div class="pricing" style="margin-top:34px">
+    ${site.courses
+      .map(
+        (c) => `<div class="card price-card${c.recommended ? ' card--accent' : ''}">
+      ${c.recommended ? '<span class="price-card__badge">추천</span>' : ''}
+      <div class="price-card__name">${c.name}</div>
+      <div class="price-card__price">${c.price}<small>원</small></div>
+      <div class="price-card__min">${c.minutes}</div>
+      <div class="price-card__desc">${c.desc}</div>
+      <a class="btn ${c.recommended ? 'btn--primary' : 'btn--ghost'} btn--block" href="${site.phoneHref}">예약 문의</a>
+    </div>`
+      )
+      .join('\n    ')}
+    </div>
+    <p class="lede" style="margin-top:24px">지역·예약 시간대·이동 거리에 따라 상담 시 최종 확인됩니다. <a href="/terms/">상세 요금 안내 보기 →</a></p>
+  </div>
+</section>
+
 <section class="section" style="background:var(--bg-2)">
   <div class="container article">
     <h2>예약 전 확인해야 할 내용</h2>
