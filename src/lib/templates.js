@@ -138,13 +138,13 @@ ${JSON.stringify(schema)}
 // 헤더
 // ---------------------------------------------------------------------------
 function header() {
-  // 지역이 많아 헤더에는 대표 지역만 노출하고, 전체 지역은 사이트맵으로 연결
+  // 헤더에는 대표 지역만 노출하고, 나머지는 사이트맵으로 연결
   const featured = regions.slice(0, 4).map((r) => [`${r.meta.base}/`, r.meta.name]);
   const links = [
     ['/', '홈'],
     ['/programs/', '프로그램'],
     ...featured,
-    ['/sitemap/', '전체 지역'],
+    ['/sitemap/', regions.length > 1 ? '전체 지역' : '사이트맵'],
     ['/contact/', '문의하기'],
   ];
   return `<a href="#main" class="skip">본문 바로가기</a>
@@ -204,14 +204,14 @@ function footer() {
     </div>
 
     <div class="footer-regions">
-      <h4>광역 시·도</h4>
+      <h4>지역 안내</h4>
       <div class="related">
       ${provinceChips}
       </div>
-      <h4 style="margin-top:22px">주요 도시</h4>
+      ${cityChips ? `<h4 style="margin-top:22px">주요 도시</h4>
       <div class="related">
       ${cityChips}
-      </div>
+      </div>` : ''}
     </div>
 
     <div class="footer-grid">

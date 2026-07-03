@@ -84,7 +84,7 @@ function homePage() {
   <div class="container">
     <p class="eyebrow">${regionNames} 출장마사지 · 이용 장소와 생활권별 예약 안내</p>
     <h1>출장마사지, 지역명보다<br>이용 장소 확인이 먼저입니다</h1>
-    <p class="lede">간다GO는 ${regionNames}에서 호텔·오피스텔·아파트·업무지구·신도시 이용 전 필요한 주소 확인, 건물 출입, 예약 가능 시간, 개인정보 처리 기준을 안내합니다.</p>
+    <p class="lede">간다GO는 ${regionNames}에서 호텔·오피스텔·아파트·업무지구·관광 숙소 이용 전 필요한 주소 확인, 건물 출입, 예약 가능 시간, 개인정보 처리 기준을 안내합니다.</p>
     <div class="hero__cta">
       <a class="btn btn--primary" href="${site.phoneHref}">전화예약 ${site.phone}</a>
       <a class="btn btn--ghost" href="/seoul-service/">서울 이용 안내 →</a>
@@ -94,16 +94,16 @@ function homePage() {
 
 <section class="section">
   <div class="container">
-    <p class="eyebrow">지역을 선택하세요</p>
-    <h2>광역 시·도 이용 안내</h2>
+    <p class="eyebrow">지역 안내</p>
+    <h2>지역별 이용 안내</h2>
     <div class="grid grid--2" style="margin-top:30px">
     ${provinceCards}
     </div>
-    <h2 style="margin-top:2em">주요 도시 상세 안내</h2>
+    ${cityCards ? `<h2 style="margin-top:2em">주요 도시 상세 안내</h2>
     <p class="lede">도(道) 내 대도시는 구·생활권 단위로 더 자세히 안내합니다.</p>
     <div class="grid grid--2" style="margin-top:24px">
     ${cityCards}
-    </div>
+    </div>` : ''}
   </div>
 </section>
 
@@ -363,7 +363,7 @@ function programBody(p) {
     <p>${p.caution}</p>
 
     <h2>이용 장소와 지역</h2>
-    <p>${p.name}은 서울·경기·인천을 비롯한 전국 안내 지역의 호텔·오피스텔·아파트·자택에서 이용할 수 있습니다. 이용 장소에 따라 건물 출입 방식과 준비 사항이 다르므로, <a href="/seoul-service/use/hotel/">호텔·숙소 이용 기준</a>과 <a href="/seoul-service/use/officetel/">오피스텔 공동현관 확인</a> 페이지를 함께 참고하세요. 지역별 생활권 안내는 <a href="/sitemap/">전체 지역</a>에서 확인할 수 있습니다. 야간 시간대 이용을 원하시면 건물 출입 가능 여부를 먼저 확인해 드리니 예약 시 시간대를 함께 알려주세요.</p>
+    <p>${p.name}은 서울 25개 구 전역의 호텔·오피스텔·아파트·자택에서 이용할 수 있습니다. 이용 장소에 따라 건물 출입 방식과 준비 사항이 다르므로, <a href="/seoul-service/use/hotel/">호텔·숙소 이용 기준</a>과 <a href="/seoul-service/use/officetel/">오피스텔 공동현관 확인</a> 페이지를 함께 참고하세요. 생활권별 안내는 <a href="/seoul-service/">서울 출장마사지 홈</a>에서 확인할 수 있습니다. 야간 시간대 이용을 원하시면 건물 출입 가능 여부를 먼저 확인해 드리니 예약 시 시간대를 함께 알려주세요.</p>
 
     <div class="notice">
       간다GO는 건전한 방문형 웰니스 관리만 제공합니다. <a href="/service-policy/">불법·선정적 서비스</a>는 제공하거나 안내하지 않으며,
