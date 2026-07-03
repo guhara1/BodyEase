@@ -1,6 +1,6 @@
 // 간다GO — HTML 템플릿 & JSON-LD 스키마 빌더
 import { site, clampDesc } from '../data/site.js';
-import { regions } from '../data/regions/index.js';
+import { regions, checks } from '../data/regions/index.js';
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -141,29 +141,44 @@ ${JSON.stringify(schema)}
 // 헤더
 // ---------------------------------------------------------------------------
 function header() {
-  // 지시서 5. 상단 메뉴 구성 — 메뉴명에 '출장마사지'를 반복하지 않는다
-  const base = regions[0].meta.base;
-  const links = [
-    [`${base}/`, '서울 홈'],
-    [`${base}/use/hotel/`, '이용 장소'],
-    [`${base}/time/after-work/`, '시간대 안내'],
-    [`${base}/belt/gangnam-business/`, '생활벨트'],
-    [`${base}/district/gangnam-gu/`, '구별 안내'],
-    [`${base}/station/gangnam-station/`, '역세권'],
-    [`${base}/check/address/`, '예약 전 확인'],
-    ['/programs/', '프로그램'],
-    ['/operating-standards/', '운영 기준'],
-    ['/contact/', '문의하기'],
+  // 지시서 5. 상단 메뉴 구성 — 메뉴명에 '출장마사지'를 반복하지 않는다.
+  // 다중 항목 메뉴는 드롭다운으로 구성 (구별 안내 = 서울 25개 자치구 전체).
+  const R = regions[0];
+  const base = R.meta.base;
+  const menu = [
+    { type: 'link', href: `${base}/`, label: '서울 홈' },
+    { type: 'group', label: '이용 장소', items: R.hubs.map((h) => [`${base}/use/${h.slug}/`, h.focus]) },
+    { type: 'group', label: '시간대 안내', items: R.times.map((t) => [`${base}/time/${t.slug}/`, t.name]) },
+    { type: 'group', label: '생활벨트', items: R.belts.map((b) => [`${base}/belt/${b.slug}/`, b.name]) },
+    { type: 'group', label: '구별 안내', wide: true, items: R.districts.map((d) => [`${base}/district/${d.slug}/`, d.name]) },
+    { type: 'group', label: '역세권', align: 'right', items: R.stations.map((s) => [`${base}/station/${s.slug}/`, s.name]) },
+    { type: 'group', label: '예약 전 확인', align: 'right', items: checks.map((c) => [`${base}/check/${c.slug}/`, c.name]) },
+    { type: 'link', href: '/programs/', label: '프로그램' },
+    { type: 'link', href: '/contact/', label: '문의하기' },
   ];
+
+  const renderItem = (m) => {
+    if (m.type === 'link') return `<a class="nav__link" href="${m.href}">${m.label}</a>`;
+    const panelCls = `nav__panel${m.wide ? ' nav__panel--wide' : ''}${m.align === 'right' ? ' nav__panel--right' : ''}`;
+    const items = m.items.map(([u, t]) => `<a href="${u}">${t}</a>`).join('');
+    return `<div class="nav__item">
+        <button type="button" class="nav__trigger" aria-expanded="false" aria-haspopup="true">${m.label}<span class="nav__caret" aria-hidden="true">▾</span></button>
+        <div class="${panelCls}" role="menu">${items}</div>
+      </div>`;
+  };
+
   return `<a href="#main" class="skip">본문 바로가기</a>
 <header class="site-header">
   <div class="container nav">
     <a class="nav__brand" href="/"><span class="dot"></span>${site.brand}</a>
     <nav class="nav__links" aria-label="주요 메뉴">
-      ${links.map(([h, t]) => `<a href="${h}">${t}</a>`).join('\n      ')}
+      ${menu.map(renderItem).join('\n      ')}
     </nav>
     <div class="nav__cta">
       <a class="btn btn--ghost btn--sm" href="${site.phoneHref}">전화예약 <span class="long">${site.phone}</span></a>
+      <button type="button" class="nav__toggle" aria-label="메뉴 열기" aria-expanded="false">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
     </div>
   </div>
 </header>`;
@@ -296,6 +311,43 @@ export function relatedHtml(links) {
 // ---------------------------------------------------------------------------
 // 페이지 셸
 // ---------------------------------------------------------------------------
+// 모바일 플로팅 전화 버튼 — 전 페이지 우측 하단, 오렌지, 흔들림 애니메이션, 탭 시 전화 연결
+function floatingCall() {
+  return `<a class="call-fab" href="${site.phoneHref}" aria-label="전화예약 ${site.phone}">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z"/></svg>
+  <span class="call-fab__pulse" aria-hidden="true"></span>
+</a>`;
+}
+
+// 헤더 드롭다운 + 모바일 메뉴 토글 스크립트 (JS 미지원 시에도 hover/focus로 동작)
+const NAV_SCRIPT = `<script>
+(function(){
+  var header=document.querySelector('.site-header');
+  var toggle=document.querySelector('.nav__toggle');
+  if(toggle){toggle.addEventListener('click',function(){
+    var open=header.classList.toggle('nav--open');
+    toggle.setAttribute('aria-expanded',open?'true':'false');
+  });}
+  var triggers=document.querySelectorAll('.nav__trigger');
+  triggers.forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var item=btn.parentElement,wasOpen=item.classList.contains('open');
+      document.querySelectorAll('.nav__item.open').forEach(function(i){if(i!==item){i.classList.remove('open');i.querySelector('.nav__trigger').setAttribute('aria-expanded','false');}});
+      item.classList.toggle('open',!wasOpen);
+      btn.setAttribute('aria-expanded',!wasOpen?'true':'false');
+    });
+  });
+  document.addEventListener('click',function(){
+    document.querySelectorAll('.nav__item.open').forEach(function(i){i.classList.remove('open');i.querySelector('.nav__trigger').setAttribute('aria-expanded','false');});
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){
+    document.querySelectorAll('.nav__item.open').forEach(function(i){i.classList.remove('open');i.querySelector('.nav__trigger').setAttribute('aria-expanded','false');});
+    if(header.classList.contains('nav--open')){header.classList.remove('nav--open');toggle&&toggle.setAttribute('aria-expanded','false');}
+  }});
+})();
+</script>`;
+
 export function page({ url, title, description, image, breadcrumbs, faq, noindex, body }) {
   const schema = buildSchemaGraph({ url, title, description, image, breadcrumbs, faq });
   return `${head({ url, title, description, image, schema, noindex })}
@@ -305,6 +357,8 @@ ${header()}
 ${body}
 </main>
 ${footer()}
+${floatingCall()}
+${NAV_SCRIPT}
 </body>
 </html>`;
 }
