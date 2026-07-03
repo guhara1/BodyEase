@@ -1,5 +1,6 @@
 // 간다GO — HTML 템플릿 & JSON-LD 스키마 빌더
 import { site, clampDesc } from '../data/site.js';
+import { regions } from '../data/regions/index.js';
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -137,12 +138,10 @@ ${JSON.stringify(schema)}
 // 헤더
 // ---------------------------------------------------------------------------
 function header() {
+  // 지역 링크는 regions 배열에서 자동 생성 (새 지역 추가 시 자동 반영)
   const links = [
     ['/', '홈'],
-    ['/seoul-service/', '서울'],
-    ['/gyeonggi-service/', '경기'],
-    ['/incheon-service/', '인천'],
-    ['/busan-service/', '부산'],
+    ...regions.map((r) => [`${r.meta.base}/`, r.meta.name]),
     ['/contact/', '문의하기'],
   ];
   return `<a href="#main" class="skip">본문 바로가기</a>
@@ -164,12 +163,7 @@ function header() {
 // ---------------------------------------------------------------------------
 function footer() {
   const cols = [
-    ['지역 안내', [
-      ['/seoul-service/', '서울 출장마사지'],
-      ['/gyeonggi-service/', '경기 출장마사지'],
-      ['/incheon-service/', '인천 출장마사지'],
-      ['/busan-service/', '부산 출장마사지'],
-    ]],
+    ['지역 안내', regions.map((r) => [`${r.meta.base}/`, `${r.meta.name} 출장마사지`])],
     ['이용 장소', [
       ['/seoul-service/use/hotel/', '호텔·숙소'],
       ['/seoul-service/use/officetel/', '오피스텔'],

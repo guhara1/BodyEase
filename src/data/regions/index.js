@@ -3,8 +3,9 @@ import { seoul } from './seoul.js';
 import { gyeonggi } from './gyeonggi.js';
 import { incheon } from './incheon.js';
 import { busan } from './busan.js';
+import { daegu } from './daegu.js';
 
 // checks(예약 전 확인 템플릿)와 policies(전역 정책)는 pages.js에서 공유
 export { checks, policies } from '../pages.js';
 
-export const regions = [seoul, gyeonggi, incheon, busan];
+export const regions = [seoul, gyeonggi, incheon, busan, daegu];
