@@ -319,7 +319,8 @@ a.card .card__more { color: var(--accent-2); font-weight: 700; font-size: .9rem;
 .pricing { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: stretch; }
 /* 상세 페이지 본문(좁은 폭)용 컴팩트 3열 요금표 */
 .pricing--compact { grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.pricing--compact .price-card { padding: 24px 16px; }
+/* 추천 배지가 코스명을 가리지 않도록 상단 여백 확보 */
+.pricing--compact .price-card { padding: 44px 16px 24px; }
 .pricing--compact .price-card__name { font-size: 1.05rem; }
 .pricing--compact .price-card__price { font-size: clamp(1.5rem, 3.6vw, 2rem); margin: 8px 0 2px; }
 .pricing--compact .price-card__desc { font-size: .85rem; margin-bottom: 16px; }
@@ -411,6 +412,8 @@ a.card .card__more { color: var(--accent-2); font-weight: 700; font-size: .9rem;
   border-left: 3px solid var(--accent); border-radius: var(--r-sm);
   padding: 16px 20px; color: var(--text-muted); font-size: .92rem;
 }
+/* 본문 내 안내 박스는 위·아래 여백으로 다른 칸과 붙지 않게 */
+.article .notice { margin: 24px 0; }
 
 /* =========================================================================
    9. 푸터 — 오렌지 CTA(제작문의·제휴문의) 포함
