@@ -1,9 +1,15 @@
-// 서울 대표 행정동 50개 — 지침서 1차-B
-// 원칙: 번호동(역삼1동 등) 개별 페이지 금지 → 대표 동 단위 1페이지.
-//       출구별·노선별 페이지 금지. 검색 의도가 있는 동만 선정.
+// 서울 행정동 — 번호동(역삼1동 등)은 대표 1개로 통합, 전 행정동 전용 페이지.
 // types: office(업무지구) hotel(호텔·숙소) officetel(오피스텔) apt(아파트·주거)
 //        shopping(상권) tour(관광 숙소)
-export const seoulDongs = [
+import { dongs as part1 } from './dongs/part1.js';
+import { dongs as part2 } from './dongs/part2.js';
+import { dongs as part3 } from './dongs/part3.js';
+import { dongs as part4 } from './dongs/part4.js';
+import { dongs as part5 } from './dongs/part5.js';
+import { dongs as part6 } from './dongs/part6.js';
+import { dongs as part7 } from './dongs/part7.js';
+
+const baseDongs = [
   // ── 강남구 (8) ─────────────────────────────────────────────
   { slug: 'yeoksam', name: '역삼동', gu: 'gangnam-gu', guName: '강남구', belt: 'gangnam-business', types: ['office', 'officetel', 'hotel'], stations: ['강남역', '역삼역', '선릉역'], h1: '역삼동 출장마사지 · 업무지구·오피스텔 이용 안내', desc: '역삼동 출장마사지 업무지구 오피스텔·호텔 이용 기준과 예약 전 확인 사항 안내.', angle: '역삼동은 강남 업무지구의 중심으로 오피스텔과 비즈니스 호텔이 밀집해 있습니다. 퇴근 후 예약과 야간 시간대 문의가 특히 많은 지역이라, 건물 출입 방식과 예약 가능 시간을 먼저 확인하는 것이 중요합니다.' },
   { slug: 'samseong', name: '삼성동', gu: 'gangnam-gu', guName: '강남구', belt: 'gangnam-business', types: ['office', 'hotel', 'officetel'], stations: ['삼성역', '선릉역', '봉은사역'], h1: '삼성동 출장마사지 · 코엑스·업무지구 이용 안내', desc: '삼성동 출장마사지 코엑스 인근 호텔·업무지구 오피스텔 이용 기준 안내.', angle: '삼성동은 코엑스와 대형 호텔, 업무 빌딩이 모여 있는 지역입니다. 행사·출장 시즌에는 호텔 예약자명 확인 문의가 늘어나므로, 숙소 이용 시 객실 출입 정책을 미리 확인해 주세요.' },
@@ -67,3 +73,21 @@ export const seoulDongs = [
   { slug: 'hwayang', name: '화양동', gu: 'gwangjin-gu', guName: '광진구', belt: 'seongsu-wangsimni', types: ['shopping', 'officetel', 'tour'], stations: ['건대입구역', '구의역'], h1: '화양동 출장마사지 · 건대 상권·오피스텔 이용 안내', desc: '화양동 출장마사지 건대입구 상권·오피스텔 이용 기준 안내.', angle: '화양동은 건대입구 상권을 중심으로 오피스텔과 소규모 숙소가 밀집한 지역입니다. 심야까지 운영되는 상권이라 야간 예약 문의가 많은 편입니다.' },
   { slug: 'cheonho', name: '천호동', gu: 'gangdong-gu', guName: '강동구', belt: 'jamsil-songpa', types: ['shopping', 'apt', 'hotel'], stations: ['천호역', '강동역'], h1: '천호동 출장마사지 · 상권·주거지 이용 안내', desc: '천호동 출장마사지 천호역 상권·아파트 단지 이용 기준 안내.', angle: '천호동은 강동 최대 상권과 재건축 신축 단지가 함께 있는 지역입니다. 신축 단지는 공동현관·방문차량 등록 확인이 필요해 사전 안내를 드립니다.' },
 ];
+
+// 기존 대표동 + 신규 생성 행정동 병합
+const merged = [...baseDongs, ...part1, ...part2, ...part3, ...part4, ...part5, ...part6, ...part7];
+
+// slug 전역 유일성 보장 — 충돌 시 구 코드 접미사 부여
+const guCode = (gu) => gu.replace(/-gu$/, '').replace(/[^a-z]/g, '').slice(0, 6);
+const seen = new Map();
+for (const d of merged) {
+  if (!seen.has(d.slug)) {
+    seen.set(d.slug, d);
+  } else {
+    const alt = `${d.slug}-${guCode(d.gu)}`;
+    d.slug = seen.has(alt) ? `${d.slug}-${d.gu}` : alt;
+    seen.set(d.slug, d);
+  }
+}
+
+export const seoulDongs = merged;

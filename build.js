@@ -607,8 +607,10 @@ async function build() {
         [`${meta.base}/check/apartment-access/`, '공동현관 확인'],
         ['/service-policy/', '불법·선정적 서비스 불가 안내'],
       ];
-      // 이 구의 행정동 버튼 목록 (번호동은 대표 1개로 통합된 데이터). 전용 페이지가 있으면 링크.
-      const dongPageByName = new Map((region.dongs || []).map((x) => [x.name, `${meta.base}/dong/${x.slug}/`]));
+      // 이 구의 행정동 버튼 목록 (번호동은 대표 1개로 통합된 데이터). 같은 구의 전용 페이지가 있으면 링크.
+      const dongPageByName = new Map(
+        (region.dongs || []).filter((x) => x.gu === d.slug).map((x) => [x.name, `${meta.base}/dong/${x.slug}/`])
+      );
       const dongButtons = ((region.guDongs && region.guDongs[d.slug]) || []).map((name) => ({
         name,
         href: dongPageByName.get(name) || null,

@@ -321,7 +321,7 @@ export function districtBody(d, ctx, beltName, relatedLinks, dongButtons = []) {
     <p>${d.name}는 단순 지역명보다 ${d.sub.join(', ')}처럼 생활권 차이가 큽니다. 업무지구와 호텔, 오피스텔, 주거지가 섞여 있으므로 예약 전 주소, 건물 출입, 숙소 규정, 이동 기준을 함께 확인해야 합니다. ${d.name}는 <a href="${ctx.base}/belt/${d.belt}/">${beltName}</a>에 속합니다.</p>
 
     ${dongChips ? `<h2>${d.name} 행정동 안내</h2>
-    <p>${d.name}의 행정동입니다. 1·2동처럼 번호로 나뉜 동은 대표 이름 하나로 묶었습니다. 밑줄이 있는 동은 이용 장소별 안내 페이지로 연결되며, 나머지는 예약 시 해당 동을 알려주시면 그에 맞춰 안내드립니다.</p>
+    <p>${d.name}의 행정동입니다. 1·2동처럼 번호로 나뉜 동은 대표 이름 하나로 묶었습니다. 각 동을 누르면 해당 동의 이용 장소별(호텔·오피스텔·아파트·업무지구) 확인 기준 페이지로 이동합니다.</p>
     ${dongChips}` : ''}
 
     <h2>${d.name} 생활권별 이용 안내</h2>
@@ -448,6 +448,7 @@ export function dongBody(d, ctx, relatedLinks) {
 
     <h2>${d.name} 이용 개요</h2>
     <p>${d.angle} ${d.name}은 ${d.guName}에 속하며, 행정 경계보다는 실제 이용 장소(호텔·오피스텔·아파트·업무지구)에 따라 확인할 내용이 달라집니다. 같은 동 안에서도 건물 유형에 따라 출입 절차와 예약 가능 시간이 다를 수 있으니, 아래 유형별 안내와 예약 전 체크리스트를 함께 확인해 주세요.</p>
+    ${d.detail ? `<p>${d.detail}</p>` : ''}
 
     <h2>${d.name} 이용 장소별 안내</h2>
     ${typeSections}
