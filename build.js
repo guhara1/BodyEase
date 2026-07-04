@@ -7,8 +7,9 @@ import { fileURLToPath } from 'node:url';
 import { site } from './src/data/site.js';
 import { regions, checks, policies } from './src/data/regions/index.js';
 import { programs } from './src/data/programs.js';
-import { page, faqHtml, relatedHtml, whwBlock } from './src/lib/templates.js';
+import { page, faqHtml, relatedHtml, whwBlock, reviewsHtml } from './src/lib/templates.js';
 import { hubBody, timeBody, beltBody, districtBody, stationBody, checkBody, dongBody, CHECKLIST } from './src/lib/content.js';
+import { reviews, reviewStats } from './src/data/reviews.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(__dirname, 'dist');
@@ -22,15 +23,59 @@ const CITY_HUB_BY_NAME = new Map(
 );
 
 const urls = [];
+const urlTitleMap = new Map();
+const escXml = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+const urlTitle = (u) => urlTitleMap.get(u) || `${'간다GO'} 안내`;
+
 async function emit(url, html, { noindex = false } = {}) {
   const rel = url.endsWith('/') ? url + 'index.html' : url;
   const out = path.join(DIST, rel.replace(/^\//, ''));
   await fs.mkdir(path.dirname(out), { recursive: true });
   await fs.writeFile(out, html, 'utf8');
-  if (!noindex) urls.push(url);
+  if (!noindex) {
+    urls.push(url);
+    const m = html.match(/<title>([^<]*)<\/title>/);
+    if (m) urlTitleMap.set(url, m[1].replace(/｜간다GO$/, ''));
+  }
 }
 
 const beltName = (region, slug) => region.belts.find((b) => b.slug === slug)?.name || slug;
+
+// 롱테일 내부링크 — 장소×이용×시간을 결합한 서술형 앵커텍스트 (기존 페이지로만 연결)
+const B = '/seoul-service';
+const SEOUL_LONGTAIL = [
+  [`${B}/station/gangnam-station/`, '강남역 호텔·오피스텔 이용 전 확인'],
+  [`${B}/dong/yeoksam/`, '역삼동 업무지구 오피스텔 예약 기준'],
+  [`${B}/station/samseong-seolleung-station/`, '삼성·선릉 업무지구 오피스텔 이용 안내'],
+  [`${B}/station/yeouido-station/`, '여의도 금융업무지구 퇴근 후 예약 안내'],
+  [`${B}/station/hongik-univ-station/`, '홍대입구역 관광 숙소 체크인 후 예약'],
+  [`${B}/station/jamsil-station/`, '잠실역 인근 호텔·상권 이용 안내'],
+  [`${B}/station/seoul-station/`, '서울역 KTX 인접 호텔 숙소 확인'],
+  [`${B}/station/seongsu-station/`, '성수역 서울숲 인접 오피스텔 확인'],
+  [`${B}/station/magok-balsan-station/`, '마곡·발산 업무지구 방문 주소 확인'],
+  [`${B}/station/gasan-digital-station/`, '가산디지털단지 지식산업센터 인접 이용 기준'],
+  [`${B}/station/myeongdong-euljiro-station/`, '명동·을지로 관광 숙소 이용 전 확인'],
+  [`${B}/dong/gongdeok/`, '공덕·마포 오피스텔 이용 기준'],
+  [`${B}/belt/gangnam-business/`, '강남 비즈니스 벨트 야간 예약 기준'],
+  [`${B}/use/night/`, '야간 출장마사지 예약 전 확인사항'],
+  [`${B}/time/after-work/`, '퇴근 후 예약 이동·도착 시간 기준'],
+  [`${B}/check/hotel-policy/`, '호텔 객실 출입 정책 확인'],
+  [`${B}/check/apartment-access/`, '아파트·오피스텔 공동현관 확인'],
+  [`${B}/station/nowon-station/`, '노원·상계 북부 생활권 이동 기준'],
+];
+function longtailSection(title, links) {
+  return `<section class="section">
+  <div class="container">
+    <p class="eyebrow">자주 찾는 안내</p>
+    <h2>${title}</h2>
+    <p class="lede">상황·장소·시간대에 맞는 확인 페이지로 바로 이동하세요.</p>
+    <div class="related related--longtail" style="margin-top:24px">
+    ${links.map(([u, t]) => `<a href="${u}">${t}</a>`).join('\n    ')}
+    </div>
+  </div>
+</section>`;
+}
 
 // ---------------------------------------------------------------------------
 // 전역 홈 (간다GO 메인) — 지역 선택 + 요금 섹션
@@ -149,7 +194,19 @@ function homePage() {
   </div>
 </section>
 
+${longtailSection('상황별 롱테일 안내', SEOUL_LONGTAIL)}
+
 <section class="section" style="background:var(--bg-2)">
+  <div class="container">
+    <p class="eyebrow">고객 후기</p>
+    <h2>실제 이용 후기</h2>
+    <p class="lede">호텔·자택·펜션·야간 등 다양한 상황에서 이용하신 고객 후기입니다.</p>
+    <div style="margin-top:30px">${reviewsHtml(reviews.slice(0, 6))}</div>
+    <p class="lede" style="margin-top:24px"><a href="/reviews/">전체 후기 보기 →</a></p>
+  </div>
+</section>
+
+<section class="section">
   <div class="container article">
     <h2>예약 전 확인해야 할 내용</h2>
     <ul class="checklist">${CHECKLIST.map((i) => `<li>${i}</li>`).join('')}</ul>
@@ -158,7 +215,7 @@ function homePage() {
   </div>
 </section>`;
 
-  return { url, title, description, faq, body };
+  return { url, title, description, faq, body, withReviews: true };
 }
 
 // ---------------------------------------------------------------------------
@@ -277,6 +334,8 @@ ${region.dongs?.length ? `<section class="section" style="background:var(--bg-2)
     <p class="lede" style="margin-top:24px">지역·예약 시간대·이동 거리에 따라 상담 시 최종 확인됩니다. <a href="/terms/">상세 요금 안내 보기 →</a></p>
   </div>
 </section>
+
+${longtailSection(`${meta.name} 상황별 롱테일 안내`, SEOUL_LONGTAIL)}
 
 <section class="section" style="background:var(--bg-2)">
   <div class="container article">
@@ -684,6 +743,23 @@ async function build() {
     await emit(url, page({ url, title: p.title, description: p.desc, breadcrumbs, faq, body: html }));
   }
 
+  // 고객 후기 (전역) — 후기 실제 노출 + Review/AggregateRating 스키마
+  {
+    const url = '/reviews/';
+    const breadcrumbs = [{ name: '홈', url: '/' }, { name: '고객 후기', url }];
+    const body = `<section class="section">
+  <div class="container article">
+    <p class="eyebrow">고객 후기</p>
+    <h1>간다GO 고객 후기</h1>
+    <p class="lede">호텔·자택·펜션·야간 등 다양한 상황에서 간다GO를 이용하신 고객 후기입니다. 평균 별점 ${reviewStats.average} / 5 (${reviewStats.count}건).</p>
+    ${reviewsHtml(reviews)}
+    <div class="notice" style="margin-top:26px">후기는 이용 상황을 참고하시도록 제공됩니다. 방문 가능 여부는 실제 주소·예약 조건 확인 후 안내드리며, <a href="/service-policy/">불법·선정적 서비스</a>는 제공하지 않습니다.</div>
+    <p style="margin-top:20px"><a class="btn btn--primary" href="${site.phoneHref}">전화예약 ${site.phone}</a></p>
+  </div>
+</section>`;
+    await emit(url, page({ url, title: '간다GO 고객 후기｜별점·이용 후기', description: `간다GO 고객 후기 ${reviewStats.count}건, 평균 별점 ${reviewStats.average}. 호텔·자택·야간 등 상황별 후기.`, breadcrumbs, body, withReviews: true }));
+  }
+
   // 정책/정적 (전역)
   for (const p of policies) {
     const url = `/${p.slug}/`;
@@ -698,9 +774,11 @@ async function build() {
     await emit(url, page({ url, title: '사이트맵｜간다GO', description: '간다GO 서울·경기 출장마사지 안내 전체 페이지 목록입니다.', breadcrumbs, body: sitemapHtmlBody() }));
   }
 
-  // sitemap.xml (image sitemap 포함 — 지시서 19)
-  const abs = (p) => site.baseUrl.replace(/\/$/, '') + p;
+  // sitemap.xml (image sitemap + lastmod 포함)
+  const ROOT = site.baseUrl.replace(/\/$/, '');
+  const abs = (p) => ROOT + p;
   const heroImg = abs('/assets/hero-bg.webp');
+  const lastmod = new Date().toISOString().slice(0, 10);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
@@ -708,6 +786,9 @@ ${urls
   .map(
     (u) => `  <url>
     <loc>${abs(u)}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${u === '/' ? 'daily' : 'weekly'}</changefreq>
+    <priority>${u === '/' ? '1.0' : u.endsWith('-service/') ? '0.9' : '0.7'}</priority>
     <image:image>
       <image:loc>${u === '/' ? abs('/assets/og-default.jpg') : heroImg}</image:loc>
       <image:title>간다GO 서울 출장마사지 이용 안내</image:title>
@@ -718,13 +799,50 @@ ${urls
 </urlset>`;
   await fs.writeFile(path.join(DIST, 'sitemap.xml'), xml, 'utf8');
 
-  // robots.txt
+  // rss.xml — 네이버·구글 빠른 수집용 피드 (전 색인 페이지 포함)
+  const rssDate = new Date().toUTCString();
+  const rssItems = urls
+    .map(
+      (u) => `    <item>
+      <title>${escXml(urlTitle(u))}</title>
+      <link>${abs(u)}</link>
+      <guid isPermaLink="true">${abs(u)}</guid>
+      <pubDate>${rssDate}</pubDate>
+    </item>`
+    )
+    .join('\n');
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>${escXml(site.brand)} · 서울 출장마사지 이용 안내</title>
+    <link>${ROOT}/</link>
+    <atom:link href="${ROOT}/rss.xml" rel="self" type="application/rss+xml"/>
+    <description>${escXml(site.defaultDescription)}</description>
+    <language>ko-KR</language>
+    <lastBuildDate>${rssDate}</lastBuildDate>
+${rssItems}
+  </channel>
+</rss>`;
+  await fs.writeFile(path.join(DIST, 'rss.xml'), rss, 'utf8');
+
+  // robots.txt — 구글·네이버(Yeti)·빙 허용 + 사이트맵·RSS 안내
   const robots = `User-agent: *
 Allow: /
-Sitemap: ${site.baseUrl.replace(/\/$/, '')}/sitemap.xml`;
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Yeti
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: ${ROOT}/sitemap.xml
+Sitemap: ${ROOT}/rss.xml`;
   await fs.writeFile(path.join(DIST, 'robots.txt'), robots, 'utf8');
 
-  console.log(`✓ 빌드 완료: ${urls.length} indexable pages (지역 ${regions.length}개) → dist/`);
+  console.log(`✓ 빌드 완료: ${urls.length} indexable pages (지역 ${regions.length}개) → dist/ (+ sitemap.xml, rss.xml, robots.txt)`);
 }
 
 build().catch((e) => {

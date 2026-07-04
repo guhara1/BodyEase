@@ -416,6 +416,25 @@ a.card .card__more { color: var(--accent-2); font-weight: 700; font-size: .9rem;
 .dong-chip--link { color: var(--text); border-color: var(--accent-ring); background: var(--accent-soft); text-decoration: underline; text-underline-offset: 3px; }
 .dong-chip--link:hover { background: var(--accent); color: #1a0d00; border-color: transparent; }
 
+/* 롱테일 링크 강조 */
+.related--longtail a { font-size: .92rem; padding: 11px 18px; }
+
+/* 고객 후기 */
+.review-summary { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+.review-summary__score { font-size: 2rem; font-weight: 800; color: var(--accent-2); }
+.review-summary__stars { color: var(--accent-2); font-size: 1.25rem; letter-spacing: 2px; }
+.review-summary__count { color: var(--text-muted); font-size: .95rem; }
+.reviews { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.review-card {
+  margin: 0; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 22px; display: flex; flex-direction: column; gap: 12px;
+}
+.review-card__stars { color: var(--accent-2); font-size: 1.05rem; letter-spacing: 2px; display: flex; align-items: center; gap: 8px; }
+.review-card__stars span { color: var(--text-muted); font-size: .85rem; letter-spacing: 0; font-weight: 700; }
+.review-card__body { margin: 0; color: var(--text-2); font-size: .94rem; line-height: 1.7; }
+.review-card__meta { color: var(--text-muted); font-size: .85rem; }
+.review-card__meta strong { color: var(--text); }
+
 /* Notice banner */
 .notice {
   border: 1px solid var(--border-2); background: var(--surface-2);

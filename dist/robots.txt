@@ -1,3 +1,14 @@
 User-agent: *
 Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Yeti
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
 Sitemap: https://bodyease-4ti.pages.dev/sitemap.xml
+Sitemap: https://bodyease-4ti.pages.dev/rss.xml

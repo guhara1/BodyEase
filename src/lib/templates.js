@@ -1,6 +1,7 @@
 // 간다GO — HTML 템플릿 & JSON-LD 스키마 빌더
 import { site, clampDesc } from '../data/site.js';
 import { regions, checks } from '../data/regions/index.js';
+import { reviews as allReviews, reviewStats } from '../data/reviews.js';
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -12,8 +13,8 @@ const abs = (path) => site.baseUrl.replace(/\/$/, '') + path;
 //  - 허용: WebPage, BreadcrumbList, Organization, WebSite, FAQPage, ImageObject
 //  - 금지: LocalBusiness, Review, AggregateRating (오프라인 매장 없는 방문형 서비스)
 // ---------------------------------------------------------------------------
-export function organizationSchema() {
-  return {
+export function organizationSchema({ withReviews = false } = {}) {
+  const org = {
     '@type': 'Organization',
     '@id': abs('/#organization'),
     name: site.brand,
@@ -27,10 +28,30 @@ export function organizationSchema() {
       telephone: site.phone,
       contactType: 'reservations',
       areaServed: 'KR',
-      availableLanguage: ['Korean'],
+      availableLanguage: ['Korean', 'English'],
     },
     sameAs: [site.telegram.build, site.telegram.partner],
+    // 종합 평점 (사용자 요청) — 전 페이지 노출
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: String(reviewStats.average),
+      reviewCount: String(reviewStats.count),
+      bestRating: '5',
+      worstRating: '1',
+    },
   };
+  // 개별 후기 스키마는 후기가 실제로 노출되는 페이지(홈·후기)에만 부착
+  if (withReviews) {
+    org.review = allReviews.map((r) => ({
+      '@type': 'Review',
+      author: { '@type': 'Person', name: r.author },
+      datePublished: r.date,
+      name: r.title,
+      reviewRating: { '@type': 'Rating', ratingValue: String(r.rating), bestRating: '5', worstRating: '1' },
+      reviewBody: r.body,
+    }));
+  }
+  return org;
 }
 
 export function websiteSchema() {
@@ -45,8 +66,8 @@ export function websiteSchema() {
 }
 
 // 페이지 그래프 (@graph) 생성
-export function buildSchemaGraph({ url, title, description, image, breadcrumbs = [], faq = [] }) {
-  const graph = [organizationSchema(), websiteSchema()];
+export function buildSchemaGraph({ url, title, description, image, breadcrumbs = [], faq = [], withReviews = false }) {
+  const graph = [organizationSchema({ withReviews }), websiteSchema()];
 
   const webpage = {
     '@type': 'WebPage',
@@ -126,6 +147,8 @@ ${noindex ? '<meta name="robots" content="noindex, follow">' : '<meta name="robo
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${img}">
 <meta name="theme-color" content="#070b16">
+<meta name="naver-site-verification" content="4408f5a5f725f955a13b53b40d9ad3ac7914ad55">
+<link rel="alternate" type="application/rss+xml" title="${esc(site.brand)} 업데이트" href="/rss.xml">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -154,6 +177,7 @@ function header() {
     { type: 'group', label: '역세권', align: 'right', items: R.stations.map((s) => [`${base}/station/${s.slug}/`, s.name]) },
     { type: 'group', label: '예약 전 확인', align: 'right', items: checks.map((c) => [`${base}/check/${c.slug}/`, c.name]) },
     { type: 'link', href: '/programs/', label: '프로그램' },
+    { type: 'link', href: '/reviews/', label: '후기' },
     { type: 'link', href: '/contact/', label: '문의하기' },
   ];
 
@@ -308,6 +332,28 @@ export function relatedHtml(links) {
   </div>`;
 }
 
+// 고객 후기 노출 (별점 포함) — 스키마와 동일 내용이 화면에 보이도록
+export function reviewsHtml(list = allReviews) {
+  const stars = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
+  const cards = list
+    .map(
+      (r) => `<figure class="review-card">
+      <div class="review-card__stars" aria-label="별점 ${r.rating}점 만점 5점">${stars(r.rating)}<span>${r.rating}.0</span></div>
+      <blockquote class="review-card__body">${r.body}</blockquote>
+      <figcaption class="review-card__meta"><strong>${r.author}</strong> · ${r.title} · <time datetime="${r.date}">${r.date.replace(/-/g, '.')}</time></figcaption>
+    </figure>`
+    )
+    .join('\n    ');
+  return `<div class="review-summary">
+    <span class="review-summary__score">${reviewStats.average}</span>
+    <span class="review-summary__stars" aria-hidden="true">★★★★★</span>
+    <span class="review-summary__count">고객 후기 ${reviewStats.count}건 · 평균 별점 ${reviewStats.average} / 5</span>
+  </div>
+  <div class="reviews">
+    ${cards}
+  </div>`;
+}
+
 // ---------------------------------------------------------------------------
 // 페이지 셸
 // ---------------------------------------------------------------------------
@@ -348,8 +394,8 @@ const NAV_SCRIPT = `<script>
 })();
 </script>`;
 
-export function page({ url, title, description, image, breadcrumbs, faq, noindex, body }) {
-  const schema = buildSchemaGraph({ url, title, description, image, breadcrumbs, faq });
+export function page({ url, title, description, image, breadcrumbs, faq, noindex, body, withReviews = false }) {
+  const schema = buildSchemaGraph({ url, title, description, image, breadcrumbs, faq, withReviews });
   return `${head({ url, title, description, image, schema, noindex })}
 <body>
 ${header()}
