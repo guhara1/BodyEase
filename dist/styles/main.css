@@ -406,6 +406,16 @@ a.card .card__more { color: var(--accent-2); font-weight: 700; font-size: .9rem;
 }
 .related a:hover { border-color: var(--accent-ring); background: var(--accent-soft); color: var(--text); }
 
+/* 행정동 버튼(칩) — 구 페이지 */
+.dong-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 26px; }
+.dong-chip {
+  font-size: .9rem; font-weight: 600; color: var(--text-2);
+  padding: 9px 15px; border-radius: var(--r-pill);
+  border: 1px solid var(--border-2); background: var(--overlay);
+}
+.dong-chip--link { color: var(--text); border-color: var(--accent-ring); background: var(--accent-soft); text-decoration: underline; text-underline-offset: 3px; }
+.dong-chip--link:hover { background: var(--accent); color: #1a0d00; border-color: transparent; }
+
 /* Notice banner */
 .notice {
   border: 1px solid var(--border-2); background: var(--surface-2);

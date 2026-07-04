@@ -607,7 +607,13 @@ async function build() {
         [`${meta.base}/check/apartment-access/`, '공동현관 확인'],
         ['/service-policy/', '불법·선정적 서비스 불가 안내'],
       ];
-      const { faq, html } = districtBody(d, meta, beltName(region, d.belt), related);
+      // 이 구의 행정동 버튼 목록 (번호동은 대표 1개로 통합된 데이터). 전용 페이지가 있으면 링크.
+      const dongPageByName = new Map((region.dongs || []).map((x) => [x.name, `${meta.base}/dong/${x.slug}/`]));
+      const dongButtons = ((region.guDongs && region.guDongs[d.slug]) || []).map((name) => ({
+        name,
+        href: dongPageByName.get(name) || null,
+      }));
+      const { faq, html } = districtBody(d, meta, beltName(region, d.belt), related, dongButtons);
       const breadcrumbs = [home, regionCrumb, { name: meta.districtLabel, url: `${meta.base}/` }, { name: d.name, url }];
       // 전 페이지 index — 생활권별 상세 본문(2,000자 이상)으로 얇은 페이지 문제를 해소했으므로
       // tier는 지역 메인 노출 우선순위로만 사용하고 noindex는 사용하지 않습니다.

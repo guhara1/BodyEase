@@ -291,8 +291,17 @@ function subSections(d) {
     .join('\n    ');
 }
 
-export function districtBody(d, ctx, beltName, relatedLinks) {
+export function districtBody(d, ctx, beltName, relatedLinks, dongButtons = []) {
   const subj = `${d.name} 이용`;
+  const dongChips = dongButtons.length
+    ? `<div class="dong-buttons">${dongButtons
+        .map((b) =>
+          b.href
+            ? `<a class="dong-chip dong-chip--link" href="${b.href}">${b.name}</a>`
+            : `<span class="dong-chip">${b.name}</span>`
+        )
+        .join('')}</div>`
+    : '';
   const faq = [
     { q: `${d.name}는 어떤 생활권으로 나뉘나요?`, a: `${d.sub.join(', ')} 등 생활권별로 이용 조건이 다릅니다.` },
     { q: `${d.name} 이용 시 무엇을 확인해야 하나요?`, a: '방문 주소, 이용 장소(호텔·오피스텔·아파트·업무지구), 건물 출입 방식, 예약 가능 시간을 확인합니다.' },
@@ -310,6 +319,10 @@ export function districtBody(d, ctx, beltName, relatedLinks) {
 
     <h2>${d.name} 개요</h2>
     <p>${d.name}는 단순 지역명보다 ${d.sub.join(', ')}처럼 생활권 차이가 큽니다. 업무지구와 호텔, 오피스텔, 주거지가 섞여 있으므로 예약 전 주소, 건물 출입, 숙소 규정, 이동 기준을 함께 확인해야 합니다. ${d.name}는 <a href="${ctx.base}/belt/${d.belt}/">${beltName}</a>에 속합니다.</p>
+
+    ${dongChips ? `<h2>${d.name} 행정동 안내</h2>
+    <p>${d.name}의 행정동입니다. 1·2동처럼 번호로 나뉜 동은 대표 이름 하나로 묶었습니다. 밑줄이 있는 동은 이용 장소별 안내 페이지로 연결되며, 나머지는 예약 시 해당 동을 알려주시면 그에 맞춰 안내드립니다.</p>
+    ${dongChips}` : ''}
 
     <h2>${d.name} 생활권별 이용 안내</h2>
     <p>아래는 ${d.name} 내 대표 생활권별로 예약 전 확인하면 좋은 내용입니다. 같은 ${ctx.districtWord} 안에서도 생활권에 따라 건물 유형과 출입 방식이 다르므로, 해당하는 생활권을 참고해 주세요.</p>
